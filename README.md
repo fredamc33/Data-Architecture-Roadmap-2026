@@ -27,9 +27,23 @@ Este repositorio documenta mi evolución técnica y estratégica hacia el rol de
 
 ### Fase 1: Infraestructura Cloud & Certificación AWS
 - **Curso:** [AWS Certified Data Engineer Associate - Udemy (Stéphane Maarek)]
-- **Notas:** - [X] Configuración de VPC y Seguridad IAM.
-  - [ ] Optimización de costos en S3 y Athena.
-  - [ ] Integración de AWS Glue con notebooks existentes.
+- **Notas:** 
+  - [X] Section 1: Introduction
+  - [X] Section 2: Data Engineering Fundamentals
+  - [ ] Section 3: Storage
+  - [ ] Section 4: Database
+  - [ ] Section 5: Migration and Transfer
+  - [ ] Section 6: Compute
+  - [ ] Section 7: Containers
+  - [ ] Section 8: Analytics
+  - [ ] Section 9: Application Integration
+  - [ ] Section 10: Security, Identity, and Compliance
+  - [ ] Section 11: Networking and Content Delivery
+  - [ ] Section 12: Management and Governance
+  - [ ] Section 13: Machine Learning
+  - [ ] Section 14: Developer Tools
+  - [ ] Section 15: Everything Else
+  - [ ] Section 16: Exam Tips
 
 ### Fase 2: Modern Data Lakehouse
 - **Curso:** [Data Engineering with dbt - DataCamp]
