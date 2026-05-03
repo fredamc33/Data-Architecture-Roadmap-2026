@@ -28,8 +28,8 @@ Este repositorio documenta mi evolución técnica y estratégica hacia el rol de
 ### Fase 1: Infraestructura Cloud & Certificación AWS
 - **Curso:** [AWS Certified Data Engineer Associate - Udemy (Stéphane Maarek)]
 - **Notas:** 
-  - [ ] Section 1: Introduction
-  - [ ] Section 2: Data Engineering Fundamentals
+  - [X] Section 1: Introduction
+  - [X] Section 2: Data Engineering Fundamentals
   - [ ] Section 3: Storage
   - [ ] Section 4: Database
   - [ ] Section 5: Migration and Transfer
