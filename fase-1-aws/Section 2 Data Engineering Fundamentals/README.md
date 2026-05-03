@@ -1,4 +1,4 @@
-## Fase 1: AWS Data Engineering Core 🚀
+## Section 2 - Data Engineering Fundamentals 🚀
 
 En esta fase me enfoqué en revisar aspectos fundamentales del Data Engineering.
 
