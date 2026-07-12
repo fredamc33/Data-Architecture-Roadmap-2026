@@ -14,11 +14,11 @@ En esta fase me enfoqué en revisar aspectos fundamentales del Data Engineering.
 - **Database Performance Optimization** crear Indexes, definir Partition Keys, aplicar Compression (reduce el tamaño físico de los datos almacenados).
 - **Data Sampling Techniques** Random Sampling, Stratified Sampling, Others (Systemic, Cluster, Convenience, Judgmental).
 - **Data Skew Mechanisms** Data Skew es cuando los datos se distribuyen de manera desigual entre los diferentes nodos o particiones de un sistema de cómputo distribuido. Mechanisms: Adaptive Partitioning, Salting, Repartitioning, Sampling, Custom Partitioning.
-- **Data Validation and Profiling** Completeness (que no falten datos esenciales), Consistency (que los datos no se contradigan entre sí), Accuracy (que la información sea correcta y real) e Integrity (que los datos mantengan su estructura y relaciones correctas a lo largo de su ciclo de vida)
+- **Data Validation and Profiling** Completeness, Consistency, Accuracy e Integrity
 - **SQL Review: Aggregations, Grouping, Sorting, Pivoting** Aggregations (COUNT, SUM, AVG, MAX/MIN), Grouping
 - **SQL JOIN types** Inner, Left, Right, full, cross
 - **SQL Regular Expressions (a quick intro)** Regex lo usamos como molde para encontrar data corrupta
-- **Git review:** git init, git config, git clone, git status, git add, git commit, git log, git branch, git checkout, git merge, git branch -d, git remote add, git remote, git push, git pull, git reset, git reset --hard, git revert <commit>, git stash, git rebase, git cherry-pick, git blame, git diff, git fetch, git fsck, git gc, git reflog
+- **Git review:** git init, git config, git clone, git status, git add, git commit, git log, git branch, git checkout, git merge, git branch -d, git remote add, git remote, git push, git pull, git reset, git reset --hard, git revert <commit>, git stash, git rebase, git cherry-pick, git blame, git diff, git fetch, git fsck, git gc, git reflog, 
 
 ### 🛠️ Ejercicios destacados:
 - **Coding Exercise 1:** Practicing aggregation queries in SQL
