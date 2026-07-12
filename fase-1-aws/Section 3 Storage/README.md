@@ -1,0 +1,49 @@
+## Section 3 - Storage ??
+
+Esta secci¨®n cubre el coraz¨®n del almacenamiento en AWS: **Amazon S3** (Simple Storage Service) y las nuevas tecnolog¨ªas de arquitectura Lakehouse como **Apache Iceberg** y **S3 Tables**. En ingenier¨ªa de datos, S3 es el bloque fundamental para construir un *Data Lake* debido a su escalabilidad infinita, bajo costo y alta disponibilidad.
+
+### ?? Conceptos Clave Dominados:
+- **Intro: Storage:**
+- **[Important] AWS Console UI Update:**
+- **Set up an AWS Billing Alarm:**
+- **Amazon S3:** almacenar datos. Organizados en buckets ("carpetas"). Estos contienen los objects (archivos), que cuentan con una key (full path, sin considerar el nombre del bucket).
+- **A note on S3 account regional namespaces:** nueva forma de asignar un nombre al bucket (se le agrega un sufijo)
+- **Amazon S3 Security - Bucket Policy:** pol¨ªticas IAM (usuario), pol¨ªticas de buckets, Object ALC, Bucket ACL
+- **Amazon S3 - Versioning:** como buena pr¨¢ctica debe estar activado el versionado. Solo aplica a buckets.
+- **Amazon S3 - Replication:** CRR (entre regiones, por normativa), SRR (misma regi¨®n, para entornos de prueba)
+- **Amazon S3 - Replication - Notes:** solo se replican objetos nuevos. Si aplicase a existentes -> S3 Batch Replication, Manejo de eliminaciones (marcas de borrado), No hay "cadena" (No Chaining) -> La replicaci¨®n no es transitiva 
+- **Amazon S3 - Replication - Hands On:**
+- **S3 Replication Time Control (RTC):** tiempos de replicaci¨®n de datos predecibles y garantizados
+- **Amazon S3 - Storage Classes:** 
+	- Amazon S3 Standard - General Purpose: datos activos
+	- Amazon S3 Standard-Infrequent Access (IA): datos que no se usan seguido pero que requieres de inmediato
+	- Amazon S3 One Zone-Infrequent Access: usar solo para datos recreables.
+	- Amazon S3 Glacier Instant Retrieval: datos archivados (acceso m¨¦dico, legal)
+	- Amazon S3 Glacier Flexible Retrieval: respaldos a largo plazo, f¨¢cil recuperaci¨®n
+	- Amazon S3 Glacier Deep Archive: respaldos a largo plazo, dif¨ªcil recuperaci¨®n
+	- Amazon S3 Intelligent Tiering: muy recomendado para patrones de uso desconocidos
+- **Amazon S3 - Storage Classes - Hands On:**
+- **Amazon S3 Express One Zone:** usar solo para datos recreables (ejm cl¨¢sico de las fotos de perfil peque?as)
+- **Amazon S3 - Lifecycle Rules:** configurar para que los objects pasen de una clase a otra de forma autom¨¢tica dependiendo de la cantidad de d¨ªas que le indiques (con el fin de ahorrar costes de almacenamiento)
+- **Amazon S3 - Lifecycle Rules - Hands On:**
+- **Amazon S3 - Event Notifications:** enviar eventos de lo que pase en S3 a otros servicios de AWS (SNS, SQS, Lambda function), previa validaci¨®n de AIM permissions de dichos servicios. Todos los eventos pasan por Amazon EventBridge
+- **Amazon S3 - Event Notifications - Hands On:**
+- **Amazon S3 - Performance:** Multi-Part upload, S3 Transfer Acceleration (pasar un archivo por public www a la edge location, para luego enviarlo al destino por private AWS). S3 Byte-Range Fetches (descargar un archivo por partes, solo descargar el header en vez de todo el archivo)
+- **Amazon S3 - Encryption:** Server-Side Encryption with Amazon S3-Managed Keys (SSE-S3), Server-Side Encryption with KMS Keys stored in AWS KMS (SSE-KMS), Server-Side Encryption with Customer-Provided Keys (SSE-C) y Client-Side Encryption. Encryption in transit (SSL/TLS) (asegura que si alguien intercepta los datos en la red mientras viajan, no pueda leerlos)
+- **About DSSE-KMS:**
+- **Amazon S3 - Encryption - Hands On:**
+- **Amazon S3 - Default Encryption:** encriptaci¨®n por defecto (Default Encryption) y las pol¨ªticas de bucket (Bucket Policies) en Amazon S3. Las pol¨ªticas de bucket se eval¨²an antes que la encriptaci¨®n por defecto.
+- **Amazon S3 - Access Points:** para simplificar la gesti¨®n de la seguridad cuando muchos grupos de usuarios diferentes necesitan acceder a un mismo bucket.
+- **Amazon S3 Tables: Introduction and the Apache Iceberg Table Format:** S3 Tables es el n¨²cleo de la estrategia de AWS para construir sistemas lakehouse, dicha tabla se guarda en formato Apache Iceberg, que es un formato de tabla de alto rendimiento dise?ado para lagos de datos (data lakes).
+- **Amazon S3 Tables: Table Buckets and Intelligent Tiering:** S3 Tables es m¨¢s eficiente, mayor rendimiento de las consultas y una tasa de transacciones mayor que un tradicional S3. Tabla bucket contiene namespaces y cada uno de estos contienen tablas. Dependiendo del uso de los datos, se podr¨¢ pasar de Frequent Access -> Infrequent Access -> Archive Instant Access.
+- **Amazon S3 Tables: Replicas and Security:** permite duplicar datos autom¨¢ticamente en copias de solo lectura para mejorar la disponibilidad, cumplir con regulaciones y acelerar la anal¨ªtica. Es compatible con el sistema de ahorro autom¨¢tico Intelligent-Tiering. La seguridad de S3 Tables combina IAM, SCPs y encriptaci¨®n con controles espec¨ªficos para bases de datos. Bloquea por completo el acceso p¨²blico y las conexiones inseguras HTTP, permitiendo conexiones privadas avanzadas a trav¨¦s de VPC Endpoints.
+- **Amazon S3 Tables - Hands On:**
+- **Amazon S3 - Storage Lens:** herramienta de anal¨ªtica dise?ada espec¨ªficamente para darte visibilidad, control y optimizaci¨®n sobre todo tu almacenamiento en Amazon S3.
+- **Amazon EBS:** son como UBS que se adjunta a una instancia EC2, dentro de una AZ. No se puede compartir con otra instancia. Una instancia EC2 puede tener m¨¢s de 1 EBS asociado. Cuando se elimina la instancia EC2, por defecto elimina el EBS ra¨ªz, pero el nuevo EBS no esta marcado para su eliminaci¨®n.
+- **Amazon EBS - Hands On:**
+- **Amazon EBS Elastic Volumes:** modificar la capacidad de EBS sin interrumpir el servicio, ya sea incrementando la capacidad del disco (no es posible reducir), cambiar tipo de disco, aumentar o disminuir el rendimiento.
+- **Amazon EFS:** sistema de archivos en red. Puede ser usado por varias instancias  EC2 a la vez. Casos de uso: gesti¨®n de contenido, web serving, data sharing, wordpress.
+- **Amazon EFS - Hands On:**
+- **Amazon EBS vs EFS:** EBS solo est¨¢ adjunto a una instancia EC2 en una AZ, snapshot para pasar un EBS a otra AZ. EFS puede ser le¨ªdo por varias instancias EC2 que est¨¢n en diferentes AZ.
+- **AWS Backup:** sacar copia de cada uno de los servicios que tengas en AWS. Cross-region y cross-account backups. No se pueden eliminar las copias de seguridad.
+- **AWS Backup - Hands On:**
