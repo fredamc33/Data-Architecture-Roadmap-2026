@@ -1,0 +1,13 @@
+﻿## Section 5 - Migration and Transfer 🚀
+
+
+
+### 🔑 Conceptos Clave Dominados:
+- **107. Intro: Migration and Transfer:**
+- **108. AWS Database Migration Service (AWS DMS):** trasladar tus datos a la nube de forma automática a través de un servidor intermediario (EC2), garantizando que tu negocio nunca deje de funcionar durante el proceso y manteniendo la información actualizada segundo a segundo (Usa CDC - Change Data Capture). Se puede usar con Multi-AZ. Tipos de migración: Homogénea (de un motor a otro idéntico, ej. Oracle a Oracle) y Heterogénea (entre motores diferentes, ej. SQL Server a AWS Aurora), en este último caso es necesario usar AWS Schema Conversion Tool (SCT) para la conversión de tablas, índices, vistas y código.
+- **109. AWS Database Migration Service (AWS DMS) - Hands On:**
+- **110. AWS DataSync:** mover grandes volúmenes de archivos y almacenamiento de forma masiva, rápida y segura, ya sea hacia la nube o entre diferentes servicios de AWS, o desde la nube al on-premises.
+- **111. AWS Snow Family:** migración de datos y computación en el entorno local (Edge Computing) que utiliza dispositivos físicos ultra-seguros y portátiles para mover grandes volúmenes de información (escala de Petabytes) hacia dentro y fuera de AWS. Ideal para mover volúmenes gigantescos de información donde el internet es muy lento, o para poner potencia de cómputo avanzada en lugares remotos sin conectividad. Modelos: Snowball Edge Storage Optimized (210 TB en SSD) y Snowball Edge Compute Optimized (28 TB en SSD), casos de uso para este último: preprocess data, machine learning, transcoding media.
+- **112. AWS Snow Family - Hands On:**
+- **113. AWS Data Exchange:** tienda digital o mercado (marketplace) donde grandes proveedores de información venden o comparten sus bases de datos, permitiendo a las empresas cargar esa información automáticamente en su almacenamiento de Amazon S3 para analizarla. Foursquare (prov. ext.) -> Data Exchange -> S3 -> SageMaker. Si no quieres perder tiempo descargando archivos grandes, se tiene **AWS Data Exchange for Redshift** ("acoplar" los datos de un tercero directamente, por ejemplo, el historial de clima de una empresa meteorológica) y **AWS Data Exchange for APIs** (te conectas a una API de un tercer, y le envías la consulta en específico).
+- **114. AWS Transfer Family:** puente para transferir archivos de forma tradicional (usando FTP/SFTP) hacia la nube. Su gran ventaja es que permite a tus sistemas antiguos o a tus proveedores externos seguir enviando información de la manera clásica en la que ya saben hacerlo, mientras que Amazon se encarga de recibir los archivos de forma segura, escalable y guardándolos directamente en tu almacenamiento en la nube.
