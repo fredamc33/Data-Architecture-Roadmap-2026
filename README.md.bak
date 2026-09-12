@@ -31,7 +31,7 @@ Este repositorio documenta mi evolución técnica y estratégica hacia el rol de
   - [X] Section 1: Introduction
   - [X] Section 2: Data Engineering Fundamentals
   - [X] Section 3: Storage
-  - [ ] Section 4: Database
+  - [X] Section 4: Database
   - [ ] Section 5: Migration and Transfer
   - [ ] Section 6: Compute
   - [ ] Section 7: Containers
