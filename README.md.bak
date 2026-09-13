@@ -33,7 +33,7 @@ Este repositorio documenta mi evolución técnica y estratégica hacia el rol de
   - [X] Section 3: Storage
   - [X] Section 4: Database
   - [X] Section 5: Migration and Transfer
-  - [ ] Section 6: Compute
+  - [X] Section 6: Compute
   - [ ] Section 7: Containers
   - [ ] Section 8: Analytics
   - [ ] Section 9: Application Integration
