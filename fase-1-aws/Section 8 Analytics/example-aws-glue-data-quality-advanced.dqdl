@@ -1,0 +1,41 @@
+/*
+======================================================================================================
+EJERCICIO: Practicing aws glue data quality
+OBJETIVO:  Entender cómo aplicar reglas de calidad avanzadas a los datos en un Job Glue
+TECNOLOGÍA: DQDL (Data Quality Definition Language)
+======================================================================================================
+
+DESCRIPCIÓN DEL RETO:
+
+1. Basic row count and completeness checks
+2. Percentage completeness and range validation
+3. Dynamic evaluation using relative date functions
+4. Composite rule with short-circuit evaluation (AND/OR)
+5. Conditional evaluation using filters (where clause)
+6. Advanced checks: Aggregations and Custom SQL
+------------------------------------------------------------------------------------------------------
+*/
+
+Rules = [
+    # 1
+    RowCount >= 100,
+    IsComplete "customer_id",
+    IsUnique "customer_id",
+    
+    # 2
+    Completeness "email" > 0.99,
+    ColumnValues "age" between 18 and 120,
+    
+    # 3
+    ColumnValues "signup_date" > (now() - 3 years),
+    
+    # 4
+    (ColumnValues "account_type" = 'PREMIUM') OR (ColumnValues "balance" >= 0),
+    
+    # 5
+    ColumnValues "tax_id" isNotUnknown where "country = 'PE'",
+    
+    # 6
+    Mean "order_amount" between 15.0 and 150.0,
+    CustomSQL "SELECT COUNT(*) FROM primary_table WHERE status = 'ERROR'" = 0
+]

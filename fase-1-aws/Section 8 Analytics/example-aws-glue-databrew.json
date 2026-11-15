@@ -1,0 +1,34 @@
+//======================================================================================================
+//EJERCICIO: Practicing aws glue databrew
+//OBJETIVO:  Entender cómo aplicar transformaciones a los datos en un Job Glue
+//TECNOLOGÍA: JSON
+//======================================================================================================
+//
+//DESCRIPCIÓN DEL RETO:
+//
+//Recipes
+//1. Combine selected demographic columns into a single key-value map column
+//2. Clean dataset by removing any rows where customer_id is NULL
+//------------------------------------------------------------------------------------------------------
+
+[
+  {
+    "RecipeAction": {
+      "Operation": "NEST_TO_MAP",
+      "Parameters": {
+        "sourceColumns": "[\"age\",\"weight_kg\",\"height_cm\"]",
+        "targetColumn": "columnName",
+        "removeSourceColumns": "true"
+      }
+    }
+  },
+  {
+    "RecipeAction": {
+      "Operation": "REMOVE_VALUES",
+      "Parameters": {
+        "sourceColumn": "customer_id",
+        "removeActionOption": "REMOVE_NULL"
+      }
+    }
+  }
+]

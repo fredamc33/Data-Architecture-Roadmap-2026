@@ -1,0 +1,135 @@
+======================================================================================================
+EJERCICIO: Practicing aws athena
+OBJETIVO:  Entender cómo se conecta Amazon Athena para consultar directamente los archivos en S3 leyendo sus metadatos del Data Catalog
+TECNOLOGÍA: Diagrama
+======================================================================================================
+
+DESCRIPCIÓN DEL RETO:
+
+1. Diagramar aws athena
+2. Pipeline clásico de analítica Serverless en AWS que combina el almacenamiento, la catalogación/ETL, las consultas interactivas y la visualización de datos
+3. Workgroups dividen y gobiernan el acceso a los datos
+4. Cómo un formato columnar reduce el volumen escaneado
+5. Compara una estructura ineficiente frente a una estructura optimizada en S3 para Amazon Athena
+6. Cómo Athena traduce las sentencias SQL a llamadas API de AWS Glue controladas por IAM
+------------------------------------------------------------------------------------------------------
+
+┌─────────────────────────┐
+│     User / Client       │
+│  (Console, JDBC/ODBC)   │
+└────────────┬────────────┘
+             │ Runs SQL Query
+             ▼
+┌───────────────────────────────────────────────────────────┐
+│                       Amazon Athena                       │
+│                   (Serverless / Presto)                   │
+└───────┬───────────────────────────────────────────┬───────┘
+        │                                           │
+        │ 1. Fetches Schema                         │ 2. Scans Raw Files
+        ▼                                           ▼
+┌─────────────────────────┐             ┌─────────────────────────┐
+│  AWS Glue Data Catalog  │             │     Amazon S3 Bucket    │
+│  (Tables & Metadata)    │             │ (Parquet, CSV, JSON...) │
+└─────────────────────────┘             └─────────────────────────┘
+
+
+
+
+
+
+┌─────────────────┐       ┌─────────────────┐       ┌─────────────────┐       ┌──────────────────┐
+│   Amazon S3     │ ────> │    AWS Glue     │ ────> │  Amazon Athena  │ ────> │ Amazon QuickSight│
+│                 │       │                 │       │                 │       │                  │
+│ (Raw/Clean Data)│       │ (Catalog/ETL)   │       │ (SQL Engine)    │       │ (Dashboards/BI)  │
+└─────────────────┘       └─────────────────┘       └─────────────────┘       └──────────────────┘
+
+
+
+
+
+
+							   ┌───────────────────────────┐
+                               │       Amazon Athena       │
+                               └─────────────┬─────────────┘
+                                             │
+                      ┌──────────────────────┴──────────────────────┐
+                      ▼                                             ▼
+          ┌───────────────────────┐                     ┌───────────────────────┐
+          │  WORKGROUP: ANALYTICS │                     │  WORKGROUP: MARKETING │
+          ├───────────────────────┤                     ├───────────────────────┤
+          │ • Limit: 10 GB/query  │                     │ • Limit: 2 GB/query   │
+          │ • Bucket: s3://bi-res │                     │ • Bucket: s3://mkt-res│
+          │ • Encrypted: KMS-K1   │                     │ • Encrypted: KMS-K2   │
+          └───────────┬───────────┘                     └───────────┬───────────┘
+                      │                                             │
+                      ▼                                             ▼
+          ┌───────────────────────┐                     ┌───────────────────────┐
+          │ Amazon CloudWatch/SNS │                     │ Amazon CloudWatch/SNS │
+          │  (Metrics & Alerts)   │                     │  (Metrics & Alerts)   │
+          └───────────────────────┘                     └───────────────────────┘
+
+
+
+
+
+
+QUERY: SELECT product, amount FROM sales_table;
+
+FORMATO CSV (Basado en Filas)            FORMATO PARQUET (Basado en Columnas)
+┌─────────────────────────────────────┐  ┌─────────────┬─────────────┬─────────────┐
+│ ID | Date | Customer | Product |Amt │  │ ID          │ Product     │ Amount      │
+├─────────────────────────────────────┤  ├─────────────┼─────────────┼─────────────┤
+│ 01 | 09-01| Juan     │ Cafe    │10  │  │ 01          │ Cafe        │ 10          │
+│ 02 | 09-01| Ana      │ Torta   │15  │  │ 02          │ Torta       │ 15          │
+│ 03 | 09-02| Luis     │ Latte   │12  │  │ 03          │ Latte       │ 12          │
+└─────────────────────────────────────┘  └─────────────┴─────────────┴─────────────┘
+  ▲ Escanea TODAS las filas/columnas       ▲ Lee SOLO las 2 columnas necesarias
+  [ 100% de los datos = $ Costo alto ]     [ 20% de los datos = 80-90% Ahorro ]
+  
+  
+  
+  
+  
+  
+  
+❌ ESTRUCTURA INEFICIENTE (Muchos archivos pequeños / Sin particionar)
+s3://my-bucket/logs/file_0001.json  (10 KB)
+s3://my-bucket/logs/file_0002.json  (12 KB) ... [100,000 archivos]
+└─> Resultado: Alto costo de API S3, consultas lentas y escaneo del 100% de datos.
+
+
+✅ ESTRUCTURA OPTIMIZADA (Particionada / Formato Parquet / Archivos Grandes)
+s3://my-bucket/logs/year=2026/month=09/day=25/
+   ├── data_block_01.snappy.parquet  (256 MB)
+   └── data_block_02.snappy.parquet  (256 MB)
+                                   │
+                                   ▼
+          QUERY: SELECT * FROM logs WHERE year='2026' AND month='09';
+          └─> Partition Pruning: Ignora todos los demás años/meses.
+          └─> Ejecuta `MSCK REPAIR TABLE logs;` si se añaden particiones manualmente en S3.
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+COMANDO SQL EN ATHENA             ACCIÓN API IAM DE AWS GLUE
+ ┌──────────────────────┐          ┌───────────────────────────────┐
+ │   SHOW DATABASES     │ ───────► │    glue:GetDatabases          │
+ ├──────────────────────┤          ├───────────────────────────────┤
+ │   CREATE TABLE       │ ───────► │    glue:CreateTable           │
+ ├──────────────────────┤          ├───────────────────────────────┤
+ │   DROP TABLE         │ ───────► │    glue:DeleteTable           │
+ ├──────────────────────┤          ├───────────────────────────────┤
+ │   MSCK REPAIR TABLE  │ ───────► │    glue:BatchCreatePartition /│
+ │                      │          │    glue:GetDatabase           │
+ └──────────────────────┘          └───────────────────────────────┘
+                                                 │
+                                                 ▼
+                                ┌─────────────────────────────────┐
+                                │ EVALUACIÓN DE POLÍTICA IAM      │
+                                │ (Efecto: Allow / Resource: ARN) │
+                                └─────────────────────────────────┘
+
+

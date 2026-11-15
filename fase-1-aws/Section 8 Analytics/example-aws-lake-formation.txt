@@ -1,0 +1,102 @@
+======================================================================================================
+EJERCICIO: Practicing aws lake formation
+OBJETIVO:  Entender cómo interactúa AWS Lake Formation como capa unificada de gobernanza sobre AWS Glue y los motores de consulta
+TECNOLOGÍA: Diagrama
+======================================================================================================
+
+DESCRIPCIÓN DEL RETO:
+
+1. Diagramar aws lake formation
+2. Diagramar pasos para construir un data lake en aws lake formation
+3.  Diagramar arquitectura para compartir recursos entre distintas cuentas de AWS mediante AWS RAM
+------------------------------------------------------------------------------------------------------
+
+[ Data Sources ] (DBs, S3, SaaS)
+         │
+         ▼
+┌───────────────────────────────────────────────────────────┐
+│                    AWS Lake Formation                     │
+│                                                           │
+│  ┌────────────────────────┐   ┌────────────────────────┐  │
+│  │ Ingestion & Partition  │   │  Fine-Grained Access   │  │
+│  │    (Built on Glue)     │   │ (DB, Table, Column/Row)│  │
+│  └───────────┬────────────┘   └───────────┬────────────┘  │
+└──────────────┼────────────────────────────┼───────────────┘
+               │                            │
+               ▼                            ▼
+┌───────────────────────────┐   ┌────────────────────────────┐
+│     AWS Glue Data Catalog │   │ Security Policy Enforcement│
+└──────────────┬────────────┘   └───────────┬────────────────┘
+               │                            │
+               └─────────────┬──────────────┘
+                             │
+                             ▼
+     ┌───────────────────────────────────────────────┐
+     │           Analytics Engine Access             │
+     │   (Amazon Athena / Redshift / EMR / Spark)    │
+     └───────────────────────────────────────────────┘
+
+
+
+
+
+
+[ 1. Create IAM User ] ───> [ 2. Create Glue Connection ] ───> [ 3. Create S3 Bucket ]
+                                                                       │
+                                                                       ▼
+[ 6. Use Blueprint ] <─── [ 5. Create Catalog DB ] <─── [ 4. Register S3 Path ]
+         │
+         ▼
+[ 7. Run Workflow ] ───> [ 8. Grant SELECT Permissions ]
+                             (for Athena, Redshift, etc.)
+
+
+
+
+
+
+┌──────────────────────────────────────┐          ┌──────────────────────────────────────┐
+│  ACCOUNT A (Data Owner / Producer)   │          │  ACCOUNT B (Consumer / Recipient)    │
+│                                      │          │                                      │
+│  ┌────────────────────────────────┐  │          │  ┌────────────────────────────────┐  │
+│  │ AWS Lake Formation             │  │          │  │ AWS Lake Formation             │  │
+│  │  └─ Grant Resource Share       │  │          │  │  └─ Data Lake Admin Accepts    │  │
+│  └───────────────┬────────────────┘  │          │  └───────────────┬────────────────┘  │
+└──────────────────┼───────────────────┘          └──────────────────┼───────────────────┘
+                   │                                                 │
+                   ▼                                                 ▼
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                        AWS Resource Access Manager (AWS RAM)                           │
+│                 (Facilitates cross-account resource catalog sharing)                   │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+
+
+
+
+
+							 TABLA ORIGINAL (FULL)
+             ┌──────────────┬──────────────┬──────────────────┐
+             │ Customer_ID  │  Product     │ Credit_Card_No   │
+             ├──────────────┼──────────────┼──────────────────┤
+             │    CUST-01   │  Espresso    │   4532-XXXX-1111 │
+             │    CUST-02   │  Pharma      │   4532-XXXX-2222 │
+             │    CUST-03   │  Latte       │   4532-XXXX-3333 │
+             └──────────────┴──────────────┴──────────────────┘
+                                    │
+                                    ▼
+             ┌────────────────────────────────────────────────┐
+             │       LAKE FORMATION DATA CELL FILTER          │
+             │                                                │
+             │  • Exclude Column : Credit_Card_No             │
+             │  • Row Filter     : product_type = 'Pharma'   │
+             └──────────────────────┬─────────────────────────┘
+                                    │
+                                    ▼
+                          VISTA FILTRADA (CELDA)
+                          ┌──────────────┬──────────┐
+                          │ Customer_ID  │ Product  │
+                          ├──────────────┼──────────┤
+                          │    CUST-02   │ Pharma   │
+                          └──────────────┴──────────┘

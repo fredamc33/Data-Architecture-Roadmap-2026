@@ -1,0 +1,33 @@
+/*
+======================================================================================================
+EJERCICIO: Practicing aws glue data quality
+OBJETIVO:  Entender cómo aplicar reglas de calidad a los datos en un Job Glue
+TECNOLOGÍA: DQDL (Data Quality Definition Language)
+======================================================================================================
+
+DESCRIPCIÓN DEL RETO:
+
+1. Ensure the transaction ID column has non-null values in over 99% of rows
+2. Ensure all transaction IDs are unique
+3. Ensure the sale amount is strictly positive
+4. Validate that the product category belongs to the allowed list
+5. Ensure the table contains at least 1,000 records before processing
+------------------------------------------------------------------------------------------------------
+*/
+
+Rules = [
+    # 1
+    Completeness "transaction_id" > 0.99,
+    
+    # 2
+    IsUnique "transaction_id",
+    
+    # 3
+    ColumnValues "amount" > 0,
+    
+    # 4
+    ColumnValues "category" in ["Beverage", "Bakery", "Merchandise"],
+    
+    # 5
+    RowCount > 1000
+]

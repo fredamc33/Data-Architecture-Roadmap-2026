@@ -1,0 +1,96 @@
+======================================================================================================
+#EJERCICIO: Practicing aws kinesis data streams
+#OBJETIVO:  Entender cómo funciona aws kinesis data streams
+#TECNOLOGÍA: Diagrama
+======================================================================================================
+
+DESCRIPCIÓN DEL RETO:
+
+1. Arquitectura Extremo a Extremo de Kinesis Data Streams
+2. Arquitectura Kinesis Data Streams -  producers
+3. Arquitectura Kinesis Data Streams - consumers
+------------------------------------------------------------------------------------------------------
+
+┌──────────────────────┐                                                          ┌──────────────────────────┐
+│      PRODUCERS       │                                                          │        CONSUMERS         │
+│                      │                                                          │                          │
+│  • AWS SDK           │                                                          │  • KCL / Custom Apps     │
+│  • KPL               │                                                          │  • AWS Lambda            │
+│  • Kinesis Agent     │			                                              │  • Kinesis Firehose      │
+└──────────┬───────────┘                                                          └────────────▲─────────────┘
+           │                                                                                   │
+           │ PutRecord (Partition Key + Data Blob <= 1MB)		                               │ GetRecords
+           │ Encrypted via HTTPS / PrivateLink (VPC Endpoints)                      		   │ Shared: 2MB/s
+           │                                                                                   │ Enhanced: 2MB/s/consumer
+           ▼                                                                                   │
+┌──────────────────────────────────────────────────────────────────────────────────────────────┴─────────────┐
+│                                 KINESIS DATA STREAM                                                        │
+│                                                                                                            │
+│   ┌────────────────────────────────────────────────────────────────────────────────────────────────────┐   │
+│   │  SHARD 1 (1 MB/s In | 1000 msg/s)                                                                  │   │
+│   ├────────────────────────────────────────────────────────────────────────────────────────────────────┤   │
+│   │  SHARD 2 (1 MB/s In | 1000 msg/s)                                                                  │   │
+│   ├────────────────────────────────────────────────────────────────────────────────────────────────────┤   │
+│   │  SHARD N ...                                                                                       │   │
+│   └────────────────────────────────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                                            │
+│  • Capacity Modes: Provisioned (manual shards) vs On-Demand (auto-scaled)			                     	 │
+│  • Security: KMS Encryption at Rest | IAM Policies | CloudTrail Audit			                          	 │
+│  • Retention: 1 to 365 Days (Immutable Data / Replay ability)                                   			 │
+└────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+
+
+
+
+		[ Fuentes de Origen de Datos ]
+  (Aplicaciones, Servidores, Sensores IoT, Logs)
+                       │
+        ┌──────────────┼──────────────┐
+        ▼              ▼              ▼
+   [ AWS SDK ]      [ KPL ]    [ Kinesis Agent ]
+   (PutRecords)   (Aggregation (Monitoreo de
+                   +Collection)   Archivos)
+        │              │              │
+        └──────────────┼──────────────┘
+                       │
+                       ▼
+       ┌───────────────────────────────┐
+       │   AMAZON KINESIS DATA STREAM  │
+       │                               │
+       │   [Shard 1]     [Shard 2]     │
+       └───────────────┬───────────────┘
+                       │
+        ┌──────────────┴──────────────┐
+        │                             │
+        ▼                             ▼
+[ Consumidor Estándar ]      [ Consumidor KCL ]
+  (Lee registro simple)     (Desempaqueta registros
+                             agregados por KPL)
+
+
+
+
+
+
+						   ┌───────────────────────────────┐
+                           │   AMAZON KINESIS DATA STREAM  │
+                           │                               │
+                           │   [Shard 1]     [Shard 2]     │
+                           └───────────────┬───────────────┘
+                                           │
+         ┌─────────────────────────────────┼─────────────────────────────────┐
+         │ (Polling GetRecords)            │ (Des-agregación +              │ (Event Source Mapping
+         │  Max 2 MB/s por Shard           │  Checkpointing)                 │  ETL / Notificaciones)
+         ▼                                 ▼                                 ▼
+┌─────────────────┐             ┌─────────────────────┐             ┌──────────────────┐
+│  Consumidor SDK │             │   Consumidor KCL    │             │    AWS Lambda    │
+│  (App Python/   │             │   (App Java/EC2)    │             │   (Serverless)   │
+│   Node/Java)    │             └──────────┬──────────┘             └────────┬─────────┘
+└─────────────────┘                        │                                 │
+                                           ▼                                 ▼
+                               ┌───────────────────────┐         ┌──────────────────────┐
+                               │    Amazon DynamoDB    │         │ S3 / DynamoDB /      │
+                               │ (Tablas de Checkpoint)│         │ Redshift / OpenSearch│
+                               └───────────────────────┘         └──────────────────────┘

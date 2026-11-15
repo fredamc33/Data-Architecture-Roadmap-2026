@@ -1,0 +1,42 @@
+======================================================================================================
+EJERCICIO: Practicing aws glue workflow
+OBJETIVO:  Entender cómo orquestar procesos ETL complejos en AWS Glue
+TECNOLOGÍA: Diagrama
+======================================================================================================
+
+DESCRIPCIÓN DEL RETO:
+
+1. Diagramar un ejemplo de aws glue workflow
+2. Diagramar un ejemplo de aws glue workflow mediante Triggers
+------------------------------------------------------------------------------------------------------
+
+[ Trigger: Month-close1 ]
+           │
+           ▼
+┌──────────────────────────────────────────────┐
+│        Ejecución en Paralelo (Jobs)          │
+│                                              │
+│   ├──> [ Glue Job: De-duplicate ] ───────┐   │
+│   │                                      │   │
+│   └──> [ Glue Job: Fix phone numbers ] ──┤   │
+└──────────────────────────────────────────────┘
+                                           │
+                                           ▼
+                           [ Event/Predicate: ALL (Both succeed) ]
+                                           │
+                                           ▼
+                           [ Glue Crawler: Update schema ]
+
+
+
+
+
+[ Cron Schedule ] ──────┐
+  [ On Demand / API ] ────┼───> ( Trigger ) ───> [ Start: Glue Job / Crawler A ]
+  [ S3 Event in S3 ] ─────┤                         │
+     (via EventBridge)    │                         │ (Upon Completion)
+                          │                         ▼
+                          └─────────────────> ( Conditional Trigger )
+                                                    │
+                                                    ▼
+                                         [ Start: Glue Job B ]
