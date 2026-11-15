@@ -1,0 +1,36 @@
+//======================================================================================================
+//EJERCICIO: Practicing aws glue databrew
+//OBJETIVO:  Entender cómo aplicar transformaciones a los datos en un Job Glue
+//TECNOLOGÍA: JSON
+//======================================================================================================
+//
+//DESCRIPCIÓN DEL RETO:
+//
+//Recipes
+//1. Mask credit card numbers leaving only the last 4 digits visible
+//2. Apply SHA-256 cryptographic hash to anonymize customer email addresses
+//------------------------------------------------------------------------------------------------------
+
+[
+  {
+    "RecipeAction": {
+      "Operation": "MASK_CUSTOM",
+      "Parameters": {
+        "sourceColumn": "credit_card_number",
+        "maskCharacter": "*",
+        "unmaskedNumber": "4",
+        "unmaskedPosition": "LAST"
+      }
+    }
+  },
+  {
+    "RecipeAction": {
+      "Operation": "CRYPTOGRAPHIC_HASH",
+      "Parameters": {
+        "sourceColumn": "email_address",
+        "targetColumn": "email_hashed",
+        "hashFunction": "SHA_256"
+      }
+    }
+  }
+]
